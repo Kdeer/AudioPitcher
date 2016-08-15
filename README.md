@@ -17,6 +17,6 @@ In the Playing audio view controller, users can
 
 
 Otherfeatures,
- 1. the app is the core data persistent.
+ 1. the app is core data persistent.
 
 Users are welcome to discover extra unlisted features by yourselves.
