@@ -1,5 +1,5 @@
 # AudioPitcher
-A record and play app
+A record and play app, first learned from Udacity and then upgraded by self's interets.
 
 
 In Recording view controller, users can
