@@ -1,6 +1,9 @@
 # AudioPitcher
 A record and play app, first learned from Udacity and then upgraded by self's interets.
 
+![39b4a1f8-df29-4ba7-9286-49f52346dd1e](https://cloud.githubusercontent.com/assets/16344019/17908275/c8a75366-694d-11e6-94b6-703f27cb4936.png)
+![04e378ec-129f-48ea-b97f-dddeb9bf65b9](https://cloud.githubusercontent.com/assets/16344019/17908276/ca0c01b6-694d-11e6-8807-742b9d3737df.png)
+
 
 In Recording view controller, users can
  1. Record audios by clicking the microphone button
