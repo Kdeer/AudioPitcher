@@ -18,7 +18,7 @@ class SoundMixViewController: UIViewController {
     var audioEngine: AVAudioEngine!
     var audioFile: AVAudioFile!
     
-    var myTimer: NSTimer = NSTimer()
+    var myTimer: Timer = Timer()
     var destinyNumber: String! = nil
     
     var playerNode: AVAudioPlayerNode! = AVAudioPlayerNode()
@@ -50,24 +50,24 @@ class SoundMixViewController: UIViewController {
     
     
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         destinyNumber = "stop"
-        errorLabel.hidden = true
-        pauseButton.hidden = true
+        errorLabel.isHidden = true
+        pauseButton.isHidden = true
         if chipmunkRate.value >= 0 {
-            darthVaderButton.hidden = true
-            chipmunkButton.hidden = false
+            darthVaderButton.isHidden = true
+            chipmunkButton.isHidden = false
         }else {
-            chipmunkButton.hidden = true
-            darthVaderButton.hidden = false
+            chipmunkButton.isHidden = true
+            darthVaderButton.isHidden = false
         }
         if audioRate.value >= 1 {
-            slowButton.hidden = true
-            fastButton.hidden = false
+            slowButton.isHidden = true
+            fastButton.isHidden = false
         }else {
-            fastButton.hidden = true
-            slowButton.hidden = false
+            fastButton.isHidden = true
+            slowButton.isHidden = false
         }
         chipmunkLabel.text = "\(chipmunkRate.value)"
         rateLabel.text = "\(audioRate.value)"
@@ -81,37 +81,37 @@ class SoundMixViewController: UIViewController {
         
         let filePath = pathForIdentifier(receivedAudio.title)
         
-        audioPlayer = try! AVAudioPlayer(contentsOfURL: NSURL(string: filePath)!)
+        audioPlayer = try! AVAudioPlayer(contentsOf: URL(string: filePath)!)
         audioPlayer.enableRate = true
         
         audioEngine = AVAudioEngine()
-        audioFile = try! AVAudioFile(forReading: NSURL(string: filePath)!)
+        audioFile = try! AVAudioFile(forReading: URL(string: filePath)!)
         
         sliderValue.maximumValue = Float(audioPlayer.duration)
         
-        chipmunkRate.value = NSUserDefaults.standardUserDefaults().floatForKey(chipmunkSliderValueKey)
+        chipmunkRate.value = UserDefaults.standard.float(forKey: chipmunkSliderValueKey)
         
-        if NSUserDefaults.standardUserDefaults().floatForKey(rateSliderValueKey) == 0 {
+        if UserDefaults.standard.float(forKey: rateSliderValueKey) == 0 {
             audioRate.value = 1
         }else {
-        audioRate.value = NSUserDefaults.standardUserDefaults().floatForKey(rateSliderValueKey)
+        audioRate.value = UserDefaults.standard.float(forKey: rateSliderValueKey)
         }
         
     }
     
-    @IBAction func Return(sender: AnyObject) {
+    @IBAction func Return(_ sender: AnyObject) {
         audioPlayer.stop()
         myTimer.invalidate()
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
 
     //mark: startButton
-    @IBAction func PlayAudio(sender: AnyObject) {
+    @IBAction func PlayAudio(_ sender: AnyObject) {
         
 
-        startButton.hidden = true
-        pauseButton.hidden = false
+        startButton.isHidden = true
+        pauseButton.isHidden = false
         if destinyNumber == "pause" {
             playerNode.play()
             myTimer.invalidate()
@@ -121,24 +121,24 @@ class SoundMixViewController: UIViewController {
             myTimer.invalidate()
         chipmunkSound1(chipmunkRate.value, rate: audioRate.value)
             destinyNumber = "playing"
-        NSUserDefaults.standardUserDefaults().setFloat(chipmunkRate.value, forKey: chipmunkSliderValueKey)
-        NSUserDefaults.standardUserDefaults().setFloat(audioRate.value, forKey: rateSliderValueKey)
+        UserDefaults.standard.set(chipmunkRate.value, forKey: chipmunkSliderValueKey)
+        UserDefaults.standard.set(audioRate.value, forKey: rateSliderValueKey)
         }
 
     }
     
     //mark: Slider Bar movement for audio Timer
     
-    @IBAction func SliderBarMovement(sender: AnyObject) {
+    @IBAction func SliderBarMovement(_ sender: AnyObject) {
         self.currentTime = Double(sliderValue.value)
         myTimer.invalidate()
-        startButton.hidden = true
-        pauseButton.hidden = false
+        startButton.isHidden = true
+        pauseButton.isHidden = false
         
         self.chipmunkSoundProgressF(chipmunkRate.value, rate: audioRate.value)
     }
     
-    @IBAction func RateMovement(sender: AnyObject) {
+    @IBAction func RateMovement(_ sender: AnyObject) {
 
         rateLabel.text = "\(audioRate.value)"
         if destinyNumber == "playing" {
@@ -147,28 +147,28 @@ class SoundMixViewController: UIViewController {
         chipmunkSoundProgress1(chipmunkRate.value, rate: audioRate.value)
         }
         if audioRate.value >= 1 {
-            slowButton.hidden = true
-            fastButton.hidden = false
+            slowButton.isHidden = true
+            fastButton.isHidden = false
         }else {
-            fastButton.hidden = true
-            slowButton.hidden = false
+            fastButton.isHidden = true
+            slowButton.isHidden = false
         }
-        NSUserDefaults.standardUserDefaults().setFloat(audioRate.value, forKey: rateSliderValueKey)
+        UserDefaults.standard.set(audioRate.value, forKey: rateSliderValueKey)
 
     }
     
-    @IBAction func pauseAction(sender: AnyObject) {
+    @IBAction func pauseAction(_ sender: AnyObject) {
         playerNode.pause()
-        startButton.hidden = false
-        pauseButton.hidden = true
+        startButton.isHidden = false
+        pauseButton.isHidden = true
         destinyNumber = "pause"
     }
     
     
     
-    @IBAction func stopbutton(sender: UIButton) {
-        startButton.hidden = false
-        pauseButton.hidden = true
+    @IBAction func stopbutton(_ sender: UIButton) {
+        startButton.isHidden = false
+        pauseButton.isHidden = true
         myTimer.invalidate()
         audioEngine.stop()
         audioEngine.reset()
@@ -182,7 +182,7 @@ class SoundMixViewController: UIViewController {
     }
     
     
-    @IBAction func chipmunkMovement(sender: AnyObject) {
+    @IBAction func chipmunkMovement(_ sender: AnyObject) {
         chipmunkLabel.text = "\(chipmunkRate.value)"
         if destinyNumber == "playing" {
         playerNode.play()
@@ -190,65 +190,65 @@ class SoundMixViewController: UIViewController {
         chipmunkSoundProgress1(chipmunkRate.value, rate: audioRate.value)
         }
         if chipmunkRate.value >= 0 {
-            darthVaderButton.hidden = true
-            chipmunkButton.hidden = false
+            darthVaderButton.isHidden = true
+            chipmunkButton.isHidden = false
         }else {
-            chipmunkButton.hidden = true
-            darthVaderButton.hidden = false
+            chipmunkButton.isHidden = true
+            darthVaderButton.isHidden = false
         }
-        NSUserDefaults.standardUserDefaults().setFloat(chipmunkRate.value, forKey: chipmunkSliderValueKey)
+        UserDefaults.standard.set(chipmunkRate.value, forKey: chipmunkSliderValueKey)
 
     }
     
-    func chipmunkSound1(SoundValue: Float, rate: Float){
+    func chipmunkSound1(_ SoundValue: Float, rate: Float){
         let filePath = pathForIdentifier(receivedAudio.title)
         
         audioEngine = AVAudioEngine()
-        audioFile = try! AVAudioFile(forReading: NSURL(string: filePath)!)
+        audioFile = try! AVAudioFile(forReading: URL(string: filePath)!)
         
         playerNode.stop()
         audioEngine.stop()
         audioEngine.reset()
 
         
-        audioEngine.attachNode(playerNode)
+        audioEngine.attach(playerNode)
         let changeAudioUnitTime = AVAudioUnitTimePitch()
         
         changeAudioUnitTime.pitch = SoundValue
         changeAudioUnitTime.rate = rate
-        audioEngine.attachNode(changeAudioUnitTime)
+        audioEngine.attach(changeAudioUnitTime)
         audioEngine.connect(playerNode, to: changeAudioUnitTime, format: nil)
         audioEngine.connect(changeAudioUnitTime, to: audioEngine.outputNode, format: nil)
-        playerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+        playerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
         
         try! audioEngine.start()
         
         playerNode.play()
         
-        myTimer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: #selector(SoundMixViewController.currentTime1), userInfo: nil, repeats: true)
+        myTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(SoundMixViewController.currentTime1), userInfo: nil, repeats: true)
     }
     
-    func chipmunkSoundProgress1(SoundValue: Float, rate: Float) {
+    func chipmunkSoundProgress1(_ SoundValue: Float, rate: Float) {
                 let filePath = pathForIdentifier(receivedAudio.title)
         
                 audioEngine = AVAudioEngine()
-                audioFile = try! AVAudioFile(forReading: NSURL(string: filePath)!)
+                audioFile = try! AVAudioFile(forReading: URL(string: filePath)!)
         
                 audioEngine.stop()
                 audioEngine.reset()
         
-                audioEngine.attachNode(playerNode)
+                audioEngine.attach(playerNode)
                 let changeAudioUnitTime = AVAudioUnitTimePitch()
                 changeAudioUnitTime.pitch = SoundValue
         changeAudioUnitTime.rate = rate
-                audioEngine.attachNode(changeAudioUnitTime)
+                audioEngine.attach(changeAudioUnitTime)
                 audioEngine.connect(playerNode, to: changeAudioUnitTime, format: nil)
                 audioEngine.connect(changeAudioUnitTime, to: audioEngine.outputNode, format: nil)
-                playerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+                playerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
         
                 try! audioEngine.start()
                 let nodeTime = playerNode.lastRenderTime!
-        let playerTime = playerNode.playerTimeForNodeTime(nodeTime)!
+        let playerTime = playerNode.playerTime(forNodeTime: nodeTime)!
         let sampleRate = playerTime.sampleRate
         let newSampleTime = AVAudioFramePosition(sampleRate*Double(sliderValue.value)
         )
@@ -256,11 +256,11 @@ class SoundMixViewController: UIViewController {
         let frameStopPlay = AVAudioFrameCount(Float(playerTime.sampleRate)*length)
         playerNode.stop()
         if frameStopPlay > 100 {
-            playerNode.scheduleSegment(audioFile, startingFrame: newSampleTime, frameCount: frameStopPlay, atTime: nil, completionHandler: nil)
+            playerNode.scheduleSegment(audioFile, startingFrame: newSampleTime, frameCount: frameStopPlay, at: nil, completionHandler: nil)
         }
         playerNode.play()
         
-        myTimer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: #selector(SoundMixViewController.currentTime1), userInfo: nil, repeats: true)
+        myTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(SoundMixViewController.currentTime1), userInfo: nil, repeats: true)
     }
     
     func showTimeLabel(){
@@ -271,9 +271,9 @@ class SoundMixViewController: UIViewController {
     
     }
     
-    func currentTime1() -> NSTimeInterval {
+    func currentTime1() -> TimeInterval {
         
-        if  let nodeTime: AVAudioTime = playerNode.lastRenderTime, playerTime: AVAudioTime = playerNode.playerTimeForNodeTime(nodeTime) {
+        if  let nodeTime: AVAudioTime = playerNode.lastRenderTime, let playerTime: AVAudioTime = playerNode.playerTime(forNodeTime: nodeTime) {
             let currentTime = Double(Double(playerTime.sampleTime) / playerTime.sampleRate)
             self.currentTime += 0.5*Double(audioRate.value)
             sliderValue.value = Float(self.currentTime)
@@ -285,9 +285,9 @@ class SoundMixViewController: UIViewController {
                 playerNode.stop()
                 myTimer.invalidate()
                 sliderValue.value = 0
-                startButton.hidden = false
+                startButton.isHidden = false
                 destinyNumber = "stop"
-                pauseButton.hidden = true
+                pauseButton.isHidden = true
 
             }
 
@@ -296,7 +296,7 @@ class SoundMixViewController: UIViewController {
         return 0
     }
     
-    func commonAudioFunction(audioChangeNumber: Float, typeOfChange: String){
+    func commonAudioFunction(_ audioChangeNumber: Float, typeOfChange: String){
         // this function was initially found on swift and learner's blog, then I edited a bit.
         //https://swiftios8dev.wordpress.com/2015/03/05/sound-effects-using-avaudioengine/
         
@@ -312,36 +312,36 @@ class SoundMixViewController: UIViewController {
         audioPlayer.stop()
         audioPlayer.currentTime = 0.0
         
-        audioEngine.attachNode(audioPlayerNode)
+        audioEngine.attach(audioPlayerNode)
         
         let changeAudioUnitTime = AVAudioUnitTimePitch()
         let reverbeffect = AVAudioUnitReverb()
         
         if (typeOfChange == "rate") {
             changeAudioUnitTime.rate = audioChangeNumber
-            audioEngine.attachNode(changeAudioUnitTime)
+            audioEngine.attach(changeAudioUnitTime)
             audioEngine.connect(audioPlayerNode, to: changeAudioUnitTime, format: nil)
             audioEngine.connect(changeAudioUnitTime, to: audioEngine.outputNode, format: nil)
-            audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+            audioPlayerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
             try! audioEngine.start()
             
             audioPlayerNode.play()
             
         } else if(typeOfChange == "pitch"){
             changeAudioUnitTime.pitch = audioChangeNumber
-            audioEngine.attachNode(changeAudioUnitTime)
+            audioEngine.attach(changeAudioUnitTime)
             audioEngine.connect(audioPlayerNode, to: changeAudioUnitTime, format: nil)
             audioEngine.connect(changeAudioUnitTime, to: audioEngine.outputNode, format: nil)
-            audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+            audioPlayerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
             try! audioEngine.start()
             
             audioPlayerNode.play()
         }else{
             reverbeffect.wetDryMix = audioChangeNumber
-            audioEngine.attachNode(reverbeffect)
+            audioEngine.attach(reverbeffect)
             audioEngine.connect(audioPlayerNode, to: reverbeffect, format: nil)
             audioEngine.connect(reverbeffect, to: audioEngine.outputNode, format: nil)
-            audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+            audioPlayerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
             try! audioEngine.start()
             
             audioPlayerNode.play()

@@ -1,4 +1,4 @@
-//
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Pin")//
 //  RecordSoundsViewController.swift
 //  test01
 //
@@ -41,13 +41,13 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate{
         audioPlayer.stop()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
                 hideAndShow(1)
         
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
 
 //        tableView.delegate = self
 
@@ -55,37 +55,37 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate{
 
     @IBAction func recordingAudio(sender: UIButton) {
         hideAndShow(2)
-        let dirPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+        let dirPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
         let currentdateTime = NSDate()
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "ddMMyyyy-HHmmss"
-        let recordingName = formatter.stringFromDate(currentdateTime)+".wave"
+        let recordingName = formatter.string(from: currentdateTime as Date)+".wave"
         let pathArray = [dirPath, recordingName]
-        let filePath = NSURL.fileURLWithPathComponents(pathArray)
+        let filePath = NSURL.fileURL(withPathComponents: pathArray)
         
         //set up audio session
         let session = AVAudioSession.sharedInstance()
         try! session.setCategory(AVAudioSessionCategoryPlayAndRecord)
         
-        try! audioRecorder = AVAudioRecorder(URL:filePath!, settings: [:])
+        try! audioRecorder = AVAudioRecorder(url:filePath!, settings: [:])
         
-        audioRecorder.meteringEnabled = true
+        audioRecorder.isMeteringEnabled = true
         audioRecorder.delegate = self
         audioRecorder.prepareToRecord()
         audioRecorder.record()
         print("in audio")
     }
     
-    func audioRecorderDidFinishRecording(recorder: AVAudioRecorder, successfully flag: Bool) {
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if(flag){
             
             
-            let alertController = UIAlertController(title: "Hello?", message: "Wanna rename the audio?", preferredStyle: .Alert)
-            alertController.addTextFieldWithConfigurationHandler{(textField) in
+            let alertController = UIAlertController(title: "Hello?", message: "Wanna rename the audio?", preferredStyle: .alert)
+            alertController.addTextField{(textField) in
                 textField.placeholder = "Name"
             }
             
-            let confirmAction = UIAlertAction(title: "Confirm", style: .Default) {
+            let confirmAction = UIAlertAction(title: "Confirm", style: .default) {
                 (action) in
                 let renameTextField = alertController.textFields![0] as UITextField
                 
@@ -102,15 +102,15 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate{
                     print(repeated)
                     renameTextField.text = renameTextField.text! + "(\(repeated))"
                 }
-
+                
                 let dictionary: [String: AnyObject] = [
-                    "title" : renameTextField.text!
+                    "title" : renameTextField.text! as AnyObject
                 ]
-                let pathWeDonotWant = self.pathForIdentifier("\(recorder.url.lastPathComponent!)")
-                let pathWeWant = self.pathForIdentifier(renameTextField.text!)
+                let pathWeDonotWant = self.pathForIdentifier(identifier: "\(recorder.url.lastPathComponent)")
+                let pathWeWant = self.pathForIdentifier(identifier: renameTextField.text!)
                 
                 do {
-                    try  NSFileManager.defaultManager().moveItemAtPath(pathWeDonotWant, toPath: pathWeWant)
+                    try  FileManager.default.moveItem(atPath: pathWeDonotWant, toPath: pathWeWant)
                 }
                 catch let error as NSError {
                     print("Ooops! Something went wrong: \(error)")
@@ -120,47 +120,54 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate{
                 self.recordedAudios.append(self.recordedAudio)
                 self.saveContext()
                 self.tableView.reloadData()
-                let controller = self.storyboard!.instantiateViewControllerWithIdentifier("SoundMixViewController") as! SoundMixViewController
+                let controller = self.storyboard!.instantiateViewController(withIdentifier: "SoundMixViewController") as! SoundMixViewController
                 controller.receivedAudio = self.recordedAudio
-                self.presentViewController(controller, animated: true, completion: nil)
+                self.present(controller, animated: true, completion: nil)
             }
             alertController.addAction(confirmAction)
             
-            let keepAction = UIAlertAction(title: "Cancel", style: .Default){
+            let keepAction = UIAlertAction(title: "Cancel", style: .default){
                 (action) in
                 let dictionary: [String: AnyObject] = [
-                    "title" : String(recorder.url.lastPathComponent!)
+                    "title" : String(recorder.url.lastPathComponent) as AnyObject
                 ]
                 
                 self.recordedAudio = RecordedAudio(dictionary: dictionary, context: self.sharedContext)
                 self.recordedAudios.append(self.recordedAudio)
                 self.saveContext()
                 self.tableView.reloadData()
-                let controller = self.storyboard!.instantiateViewControllerWithIdentifier("SoundMixViewController") as! SoundMixViewController
+                let controller = self.storyboard!.instantiateViewController(withIdentifier: "SoundMixViewController") as! SoundMixViewController
                 controller.receivedAudio = self.recordedAudio
-                self.presentViewController(controller, animated: true, completion: nil)
+                self.present(controller, animated: true, completion: nil)
                 
             }
             
             alertController.addAction(keepAction)
-            self.presentViewController(alertController, animated: true, completion: nil)
+            self.present(alertController, animated: true, completion: nil)
             
         }else{
             print("recording was not successful")
-            recordingAudio.enabled = true
-            stopbutton.hidden = true
-            start.hidden = false
+            recordingAudio.isEnabled = true
+            stopbutton.isHidden = true
+            start.isHidden = false
         }
     }
-
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "stopRecording"){
-            let playSoundsVC: PlaySoundsViewController = segue.destinationViewController as! PlaySoundsViewController
+            let playSoundsVC: PlaySoundsViewController = segue.destination as! PlaySoundsViewController
             let data = sender as!RecordedAudio
             playSoundsVC.receivedAudio = data
         }
     }
+    
+//    func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+//        if (segue.identifier == "stopRecording"){
+//            let playSoundsVC: PlaySoundsViewController = segue.destination as! PlaySoundsViewController
+//            let data = sender as!RecordedAudio
+//            playSoundsVC.receivedAudio = data
+//        }
+//    }
     
     @IBAction func pausebutton(sender: UIButton) {
         hideAndShow(3)
@@ -177,11 +184,11 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate{
     func fetchAllPins() -> [RecordedAudio] {
         
         // Create the Fetch Request
-        let fetchRequest = NSFetchRequest(entityName: "RecordedAudio")
-        
+//        let fetchRequest = NSFetchRequest(entityName: "RecordedAudio")
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "RecordedAudio")
         // Execute the Fetch Request
         do {
-            return try sharedContext.executeFetchRequest(fetchRequest) as! [RecordedAudio]
+            return try sharedContext.fetch(fetchRequest) as! [RecordedAudio]
         } catch  let error as NSError {
             print("Error in fetchAllActors(): \(error)")
             return [RecordedAudio]()
@@ -196,9 +203,9 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate{
     }
     
     func pathForIdentifier(identifier: String) -> String {
-        let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-        let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
-        return fullURL.path!
+        let documentsDirectoryURL: NSURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! as NSURL
+        let fullURL = documentsDirectoryURL.appendingPathComponent(identifier)
+        return fullURL!.path
     }
     
     //Mark: code to change the file's name

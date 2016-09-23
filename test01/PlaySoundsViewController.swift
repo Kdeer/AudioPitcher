@@ -20,7 +20,7 @@ class PlaySoundsViewController: UIViewController {
     @IBOutlet weak var sliderValue: UISlider!
     
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
 
@@ -31,11 +31,11 @@ class PlaySoundsViewController: UIViewController {
 
         let filePath = pathForIdentifier(receivedAudio.title)
         
-        audioPlayer = try! AVAudioPlayer(contentsOfURL: NSURL(string: filePath)!)
+        audioPlayer = try! AVAudioPlayer(contentsOf: URL(string: filePath)!)
         audioPlayer.enableRate = true
         
         audioEngine = AVAudioEngine()
-        audioFile = try! AVAudioFile(forReading: NSURL(string: filePath)!)
+        audioFile = try! AVAudioFile(forReading: URL(string: filePath)!)
         
         sliderValue.maximumValue = Float(audioPlayer.duration)
         
@@ -58,23 +58,23 @@ class PlaySoundsViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-    @IBAction func Return(sender: AnyObject) {
+    @IBAction func Return(_ sender: AnyObject) {
         audioPlayer.stop()
-        NSTimer.cancelPreviousPerformRequestsWithTarget(self)
-        self.dismissViewControllerAnimated(true, completion: nil)
+        Timer.cancelPreviousPerformRequests(withTarget: self)
+        self.dismiss(animated: true, completion: nil)
     }
     
     
     
-    @IBAction func pitchSlider(sender: AnyObject) {
+    @IBAction func pitchSlider(_ sender: AnyObject) {
         
         
         audioPlayer.stop()
-        audioPlayer.currentTime = NSTimeInterval(sliderValue.value)
+        audioPlayer.currentTime = TimeInterval(sliderValue.value)
         audioPlayer.prepareToPlay()
         audioPlayer.play()
         
-        NSTimer.scheduledTimerWithTimeInterval(0.1, target: self, selector: #selector(PlaySoundsViewController.updateSlider), userInfo: nil, repeats: true)
+        Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(PlaySoundsViewController.updateSlider), userInfo: nil, repeats: true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -82,31 +82,31 @@ class PlaySoundsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func slowplay(sender: UIButton) {
+    @IBAction func slowplay(_ sender: UIButton) {
        commonAudioFunction((0.5), typeOfChange: "rate")
     }
 
-    @IBAction func fastplay(sender: UIButton) {
+    @IBAction func fastplay(_ sender: UIButton) {
         commonAudioFunction(1.5, typeOfChange: "rate")
     }
     
-    @IBAction func chipmunk(sender: UIButton) {
+    @IBAction func chipmunk(_ sender: UIButton) {
         let pitch = sliderValue.value
         commonAudioFunction(pitch, typeOfChange: "pitch")
 //        audioPlayer.currentTime = 5.0
     }
     
-    @IBAction func darthvader(sender: UIButton) {
+    @IBAction func darthvader(_ sender: UIButton) {
         commonAudioFunction(-1000, typeOfChange: "pitch")
     }
     
-    @IBAction func reverbsound(sender: UIButton) {
+    @IBAction func reverbsound(_ sender: UIButton) {
         commonAudioFunction(50, typeOfChange: "reverb")
         
     }
     
     
-    func commonAudioFunction(audioChangeNumber: Float, typeOfChange: String){
+    func commonAudioFunction(_ audioChangeNumber: Float, typeOfChange: String){
         // this function was initially found on swift and learner's blog, then I edited a bit.
         //https://swiftios8dev.wordpress.com/2015/03/05/sound-effects-using-avaudioengine/
         
@@ -122,36 +122,36 @@ class PlaySoundsViewController: UIViewController {
         audioPlayer.stop()
         audioPlayer.currentTime = 3.0
         
-        audioEngine.attachNode(audioPlayerNode)
+        audioEngine.attach(audioPlayerNode)
         
         let changeAudioUnitTime = AVAudioUnitTimePitch()
         let reverbeffect = AVAudioUnitReverb()
         
         if (typeOfChange == "rate") {
             changeAudioUnitTime.rate = audioChangeNumber
-            audioEngine.attachNode(changeAudioUnitTime)
+            audioEngine.attach(changeAudioUnitTime)
             audioEngine.connect(audioPlayerNode, to: changeAudioUnitTime, format: nil)
             audioEngine.connect(changeAudioUnitTime, to: audioEngine.outputNode, format: nil)
-            audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+            audioPlayerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
             try! audioEngine.start()
             
             audioPlayerNode.play()
             
         } else if(typeOfChange == "pitch"){
             changeAudioUnitTime.pitch = audioChangeNumber
-            audioEngine.attachNode(changeAudioUnitTime)
+            audioEngine.attach(changeAudioUnitTime)
             audioEngine.connect(audioPlayerNode, to: changeAudioUnitTime, format: nil)
             audioEngine.connect(changeAudioUnitTime, to: audioEngine.outputNode, format: nil)
-            audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+            audioPlayerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
             try! audioEngine.start()
             
             audioPlayerNode.play()
         }else{
             reverbeffect.wetDryMix = audioChangeNumber
-            audioEngine.attachNode(reverbeffect)
+            audioEngine.attach(reverbeffect)
             audioEngine.connect(audioPlayerNode, to: reverbeffect, format: nil)
             audioEngine.connect(reverbeffect, to: audioEngine.outputNode, format: nil)
-            audioPlayerNode.scheduleFile(audioFile, atTime: nil, completionHandler: nil)
+            audioPlayerNode.scheduleFile(audioFile, at: nil, completionHandler: nil)
             try! audioEngine.start()
             
             audioPlayerNode.play()
@@ -159,7 +159,7 @@ class PlaySoundsViewController: UIViewController {
     }
     }
     
-    @IBAction func stopbutton(sender: UIButton) {
+    @IBAction func stopbutton(_ sender: UIButton) {
         audioPlayer.stop()
         audioEngine.stop()
         sliderValue.value = 0
@@ -171,10 +171,10 @@ class PlaySoundsViewController: UIViewController {
         NSLog("\(sliderValue.value)")
     }
     
-    func pathForIdentifier(identifier: String) -> String {
-        let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-        let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
-        return fullURL.path!
+    func pathForIdentifier(_ identifier: String) -> String {
+        let documentsDirectoryURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fullURL = documentsDirectoryURL.appendingPathComponent(identifier)
+        return fullURL.path
     }
     /*
     // MARK: - Navigation

@@ -15,15 +15,15 @@ class RecordedAudio: NSManagedObject{
     
     @NSManaged var title: String!
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertInto: context)
     }
     
     init(dictionary: [String:AnyObject], context: NSManagedObjectContext){
         
-        let entity =  NSEntityDescription.entityForName("RecordedAudio", inManagedObjectContext: context)!
+        let entity =  NSEntityDescription.entity(forEntityName: "RecordedAudio", in: context)!
         
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertInto: context)
         
         title = dictionary["title"] as! String
     }
